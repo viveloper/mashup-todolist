@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useTodoDispatch, useTodoState } from '../context/TodoContext';
 import TodoItem from './TodoItem';
 
 const TodoListBlock = styled.div`
@@ -10,6 +11,12 @@ const TodoListBlock = styled.div`
 `;
 
 const TodoList = () => {
+  const todos = useTodoState();
+  const dispatch = useTodoDispatch();
+  console.log({
+    todos,
+    dispatch,
+  });
   return (
     <TodoListBlock>
       <TodoItem key={1} id={1} text={'할 일 1'} done={true} />
