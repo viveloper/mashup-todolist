@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
-import { useTodoDispatch, useTodoNextId } from '../context/TodoContext';
+import { ACTIONS, useTodoDispatch } from '../context/TodoContext';
 
 const CircleButton = styled.button`
   background: #38d9a9;
@@ -69,33 +69,37 @@ const Input = styled.input`
   box-sizing: border-box;
 `;
 
+const uuidv4 = () => {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  );
+};
+
 const TodoCreate = () => {
+  const [text, setText] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const onToggle = () => setOpen((open) => !open);
+
   const dispatch = useTodoDispatch();
 
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState('');
-
-  const nextId = useTodoNextId();
-
-  const onToggle = () => {
-    setOpen(!open);
-  };
-
-  const onInputChange = (e) => {
+  const handleInputChange = (e) => {
     setText(e.target.value);
   };
 
-  const onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     dispatch({
-      type: 'CREATE',
+      type: ACTIONS.CREATE,
       todo: {
-        id: nextId.current,
+        id: uuidv4(),
         text,
         done: false,
       },
     });
-    nextId.current++;
     setText('');
     setOpen(false);
   };
@@ -104,12 +108,12 @@ const TodoCreate = () => {
     <>
       {open && (
         <InsertFormPositioner>
-          <InsertForm onSubmit={onSubmit}>
+          <InsertForm onSubmit={handleSubmit}>
             <Input
+              onChange={handleInputChange}
+              value={text}
               placeholder="할 일을 입력 후, Enter를 누르세요"
               autoFocus
-              onChange={onInputChange}
-              value={text}
             />
           </InsertForm>
         </InsertFormPositioner>
