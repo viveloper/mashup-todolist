@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
+import { ACTIONS, useTodoDispatch } from '../context/TodoContext';
 
 const CircleButton = styled.button`
   background: #38d9a9;
@@ -68,16 +69,52 @@ const Input = styled.input`
   box-sizing: border-box;
 `;
 
+const uuidv4 = () => {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  );
+};
+
 const TodoCreate = () => {
+  const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
+
   const onToggle = () => setOpen((open) => !open);
+
+  const dispatch = useTodoDispatch();
+
+  const handleInputChange = (e) => {
+    setText(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch({
+      type: ACTIONS.CREATE,
+      todo: {
+        id: uuidv4(),
+        text,
+        done: false,
+      },
+    });
+    setText('');
+    setOpen(false);
+  };
 
   return (
     <>
       {open && (
         <InsertFormPositioner>
-          <InsertForm>
-            <Input placeholder="할 일을 입력 후, Enter를 누르세요" autoFocus />
+          <InsertForm onSubmit={handleSubmit}>
+            <Input
+              onChange={handleInputChange}
+              value={text}
+              placeholder="할 일을 입력 후, Enter를 누르세요"
+              autoFocus
+            />
           </InsertForm>
         </InsertFormPositioner>
       )}

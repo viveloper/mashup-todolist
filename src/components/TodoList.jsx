@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useTodoDispatch, useTodoState } from '../context/TodoContext';
+import { useTodoState } from '../context/TodoContext';
 import TodoItem from './TodoItem';
 
 const TodoListBlock = styled.div`
@@ -12,15 +12,17 @@ const TodoListBlock = styled.div`
 
 const TodoList = () => {
   const todos = useTodoState();
-  const dispatch = useTodoDispatch();
-  console.log({
-    todos,
-    dispatch,
-  });
+
   return (
     <TodoListBlock>
-      <TodoItem key={1} id={1} text={'할 일 1'} done={true} />
-      <TodoItem key={2} id={2} text={'할 일 2'} done={false} />
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          id={todo.id}
+          text={todo.text}
+          done={todo.done}
+        />
+      ))}
     </TodoListBlock>
   );
 };
